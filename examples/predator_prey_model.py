@@ -1,8 +1,8 @@
-from models.auxiliary import Auxiliary
-from models.scenario import Scenario
-from models.scenario_manager import ScenarioManager
+from models.core.auxiliary import Auxiliary
+from models.scenario.scenario import Scenario
+from models.scenario.scenario_manager import ScenarioManager
 
-from models.visualization import Visualization
+from models.visualization.visualization import Visualization
 import pandas as pd
 
 
