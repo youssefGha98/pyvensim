@@ -3,7 +3,6 @@ from models.scenario.scenario import Scenario
 from models.scenario.scenario_manager import ScenarioManager
 
 from models.visualization.visualization import Visualization
-import pandas as pd
 
 
 auxiliaries = [
