@@ -75,13 +75,11 @@ class Visualization:
         df = self.dataframe[["time", stock_1, stock_2]][:interval]
         df.set_index("time", inplace=True)
         ax = df.plot(kind="bar", stacked=True)
-        # Pour éviter l'encombrement de l'axe des x
         n = interval / 5
         for index, label in enumerate(ax.xaxis.get_ticklabels()):
             if index % n != 0:
                 label.set_visible(False)
 
-        # Rotation des étiquettes pour les rendre lisibles
         plt.xticks(rotation=45)
         plt.xlabel("Time")
         plt.ylabel("Quantity")
@@ -98,18 +96,14 @@ class Visualization:
     def plot_sensitivity_results(
         self, sensitivity_results, stock_names, flow_names=None
     ):
-        # Créez une palette de couleurs
         color_cycle = itertools.cycle(
             ["blue", "green", "red", "purple", "orange", "brown"]
         )
 
-        # Générez une couleur pour chaque ensemble de paramètres
         colors = {params: next(color_cycle) for params in sensitivity_results.keys()}
 
-        # Préparez la figure et les axes
         fig, ax = plt.subplots(figsize=(10, 6))
 
-        # Tracez les données pour chaque ensemble de paramètres
         for params, df in sensitivity_results.items():
             for stock_name in stock_names:
                 ax.plot(
@@ -129,7 +123,6 @@ class Visualization:
                         linestyle="--",
                     )
 
-        # Réglages des axes et affichage
         ax.set_xlabel("Time")
         ax.set_ylabel("Quantity")
         ax.set_title("Simulation Results for Different Parameters")
@@ -145,29 +138,23 @@ class Visualization:
         aggfunc_name="Mean",
         title=None,
     ):
-        # Créer une liste pour les données de la heatmap, en agrégeant si nécessaire
         heatmap_data = []
         for params, data in sensitivity_results.items():
-            # Assurez-vous que data[stock_name] est une Series Pandas pour appliquer l'agrégation
             if not isinstance(data[stock_name], pd.Series):
                 data_series = pd.Series(data[stock_name])
             else:
                 data_series = data[stock_name]
 
-            # Appliquer la fonction d'agrégation en utilisant une chaîne de caractères
             agg_value = data_series.agg(aggfunc)
             heatmap_data.append(params + (agg_value,))
 
-        # Convertir en DataFrame
         columns = list(param_names) + [f"{aggfunc_name} Value"]
         heatmap_df = pd.DataFrame(heatmap_data, columns=columns)
 
-        # Grouper et pivoter pour la heatmap
         heatmap_pivot = heatmap_df.pivot(
             index=param_names[0], columns=param_names[1], values=f"{aggfunc_name} Value"
         )
 
-        # Créer et afficher la heatmap
         plt.figure(figsize=(10, 8))
         sns.heatmap(heatmap_pivot, annot=True, fmt=".1f", cmap="YlGnBu")
         plt.title(
@@ -179,16 +166,13 @@ class Visualization:
         plt.show()
 
     def plot_grid(self, simulation_results, plot_columns, title=None):
-        # Identifier le nombre de lignes et de colonnes nécessaires
         params_list = list(simulation_results.keys())
         num_rows = len(set(p[0] for p in params_list))
         num_columns = len(set(p[1] for p in params_list))
 
-        # Créer la grille de sous-graphiques
         fig, axes = plt.subplots(num_rows, num_columns, figsize=(20, 15))
         axes = np.array(axes).reshape(num_rows, num_columns)
 
-        # Tracer les graphiques pour chaque combinaison de paramètres
         for idx, params in enumerate(params_list):
             row, col = divmod(idx, num_columns)
             ax = axes[row, col]
@@ -202,7 +186,6 @@ class Visualization:
             ax.set_ylabel("Quantity")
             ax.legend()
 
-        # Ajuster l'espacement et définir le titre principal
         fig.suptitle(title or "Grid of Subplots")
         plt.tight_layout(rect=[0, 0.03, 1, 0.95])
         plt.show()

@@ -28,9 +28,7 @@ class Flow(SystemComponent):
                     -self.sensitivity, self.sensitivity
                 )
 
-            # Réduire le stock source
             if self.source:
                 self.source.change(-flow_rate * dt)
-            # Augmenter le stock destination
             if self.destination:
                 self.destination.change(flow_rate * dt)

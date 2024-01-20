@@ -1,8 +1,7 @@
-from .stock import Stock
-from .flow import Flow
-from .simulation import Simulation
-from .auxiliary import Auxiliary
-from .calibrator import Calibrator
+from ..core.stock import Stock
+from ..core.flow import Flow
+from ..engine.simulation import Simulation
+from ..calibration.calibrator import Calibrator
 import pandas as pd
 
 
@@ -15,29 +14,24 @@ class Scenario:
         self.results = None
 
     def construct_simulation(self, modified_parameters=None):
-        # Create stocks
         stocks = {
             name: Stock(name, initial_value)
             for name, initial_value in self.initial_values.items()
         }
 
-        # Apply any modifications to initial values if provided
         if modified_parameters and "initial_values" in modified_parameters:
             for name, value in modified_parameters["initial_values"].items():
                 if name in stocks:
                     stocks[name].value = value
 
-        # Create auxiliaries as a dictionary
         aux_values = {aux.name: aux.value() for aux in self.auxiliaries}
 
-        # Create flows with a lambda that captures the current state of stocks and auxiliaries
         flows = []
         for rate_name, rate_details in self.rates.items():
             rate_function = rate_details["rate_function"]
             source = rate_details.get("source")
             destination = rate_details.get("destination")
 
-            # Update the rate function to use the current values from stocks and auxiliaries
             wrapped_rate_function = (  # noqa: E731
                 lambda s=stocks, a=aux_values, rf=rate_function: rf(
                     **{
@@ -54,7 +48,6 @@ class Scenario:
             )
             flows.append(flow)
 
-        # Create the simulation
         simulation = Simulation()
         for stock in stocks.values():
             simulation.add_component(stock)
@@ -90,24 +83,20 @@ class Scenario:
         results = {}
         original_values = {}
 
-        # Enregistrer toutes les valeurs originales avant de commencer les simulations
         for param in parameters:
             original_values[param["name"]] = self._get_original_values(
                 param["component"], param["name"]
             )
 
         for combination in param_combinations:
-            # Appliquer la combinaison des paramètres à la simulation
             for i, param in enumerate(parameters):
                 self._modify_component_value(
                     param["component"], param["name"], combination[i]
                 )
 
-            # Exécuter la simulation avec la combinaison de paramètres actuelle
             simulation = self.construct_simulation()
             results[combination] = simulation.run(until, dt)
 
-            # Restaurer les valeurs originales après chaque simulation
             for param in parameters:
                 self._restore_original_values(
                     param["component"], param["name"], original_values[param["name"]]
@@ -116,43 +105,35 @@ class Scenario:
         return results
 
     def _get_original_values(self, component_name, parameter):
-        # Ici, récupérez et renvoyez les valeurs originales du composant spécifié
         if component_name == "auxiliaries":
             for aux in self.auxiliaries:
                 if aux.name == parameter:
                     return aux.values
         elif component_name == "stocks":
             return self.initial_values[parameter]
-        # Ajoutez une logique similaire pour 'flows' si nécessaire
 
     def _modify_component_value(self, component_name, parameter, value):
-        # Ici, modifiez la valeur du composant spécifié
         if component_name == "auxiliaries":
             for aux in self.auxiliaries:
                 if aux.name == parameter:
                     aux.values = value
         elif component_name == "stocks":
             self.initial_values[parameter] = value
-        # Ajoutez une logique similaire pour 'flows' si nécessaire
 
     def _restore_original_values(self, component_name, parameter, original_values):
-        # Ici, restaurez les valeurs originales du composant spécifié
         if component_name == "auxiliaries":
             for aux in self.auxiliaries:
                 if aux.name == parameter:
                     aux.values = original_values
         elif component_name == "stocks":
             self.initial_values[parameter] = original_values
-        # Ajoutez une logique similaire pour 'flows' si nécessaire
 
     def calculate_elasticities(
         self, sensitivity_results, base_params, comparison_params, stock_name
     ):
         elasticities = {}
         base_df = pd.DataFrame(sensitivity_results[base_params])
-        base_population = base_df[
-            stock_name
-        ].mean()  # Ou une autre mesure centrale selon le contexte
+        base_population = base_df[stock_name].mean()
 
         for params, comparison_dict in sensitivity_results.items():
             if params != base_params:
@@ -163,7 +144,7 @@ class Scenario:
                 ) * 100
                 percentage_change_in_params = (
                     (params[0] - base_params[0]) / base_params[0]
-                ) * 100  # Adapté pour un seul paramètre, à généraliser si nécessaire
+                ) * 100
 
                 if percentage_change_in_params != 0:
                     elasticity = (
@@ -211,9 +192,7 @@ class Scenario:
                         original_values[component_name] = flow.rate_function
                         flow.rate_function = lambda: shock_value
 
-        # Exécuter la simulation
         self.run(until, dt)
-        # Restaurer les valeurs originales
         for component_name, details in components.items():
             component_type = details["component_type"]
             if component_type == "auxiliary":
