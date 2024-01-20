@@ -16,7 +16,7 @@ To get started with this Python implementation of Vensim:
    
 git clone https://github.com/youssefGha98/pyvensim.git
 
-3. **Install required libraries:**
+2. **Install required libraries:**
 - Ensure that Python is installed on your system.
 - Install the necessary libraries as specified in `requirements.txt`.
 ## How to Contribute
