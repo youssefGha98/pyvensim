@@ -68,9 +68,9 @@ auxiliaries = (
 initial_values = {
     "fish_population": 1000,  # Initial fish population
     # New stocks
-    "water_volume": 1000000,  # en litres, par exemple
-    "nutrient_concentration": 50,  # en mg/L, par exemple
-    "aquatic_vegetation": 100,  # en kg, par exemple
+    "water_volume": 1000000,  # in litres, for example
+    "nutrient_concentration": 50,  # in mg/L, for example
+    "aquatic_vegetation": 100,  # in kg, for example
 }
 # Fish-related rates
 fish_rates = {

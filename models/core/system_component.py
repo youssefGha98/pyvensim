@@ -1,6 +1,10 @@
-class SystemComponent:
-    def __init__(self, name):
-        self.name = name
+from abc import ABC, abstractmethod
 
-    def step(self, dt):
+
+class SystemComponent(ABC):
+    def __init__(self, name: str) -> None:
+        self.name: str = name
+
+    @abstractmethod
+    def step(self, dt: float) -> None:
         pass

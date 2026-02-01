@@ -61,10 +61,10 @@ manager.run_all(simulation_time=1000, dt=1)
 # Get results for a specific scenario
 results = manager.get_results("Base Scenario")
 
-# Définir la plage de valeurs pour rabbit_reproduction_rate
+# Define the range of values for rabbit_reproduction_rate
 sensitivity_values = [0.05, 0.075, 0.1, 0.125, 0.15]
 
-# Exécuter l'analyse de sensibilité sur le scénario 'Base Scenario'
+# Run sensitivity analysis on the 'Base Scenario' scenario
 sensitivity_results = scenario1.run_sensitivity_analysis_univariate(
     "auxiliaries", "rabbit_reproduction_rate", sensitivity_values
 )

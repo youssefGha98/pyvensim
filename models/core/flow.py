@@ -1,17 +1,25 @@
-from .system_component import SystemComponent
+from __future__ import annotations
+
 import random
+from collections.abc import Callable
+from typing import TYPE_CHECKING
+
+from .system_component import SystemComponent
+
+if TYPE_CHECKING:
+    from .stock import Stock
 
 
 class Flow(SystemComponent):
     def __init__(
         self,
-        name,
-        source=None,
-        destination=None,
-        rate_function=None,
-        add_noise=False,
-        sensitivity=0.1,
-    ):
+        name: str,
+        source: Stock | None = None,
+        destination: Stock | None = None,
+        rate_function: Callable[[], float] | None = None,
+        add_noise: bool = False,
+        sensitivity: float = 0.1,
+    ) -> None:
         super().__init__(name)
         self.source = source
         self.destination = destination
@@ -19,7 +27,7 @@ class Flow(SystemComponent):
         self.add_noise = add_noise
         self.sensitivity = sensitivity
 
-    def step(self, dt):
+    def step(self, dt: float) -> None:
         if callable(self.rate_function):
             flow_rate = self.rate_function()
 

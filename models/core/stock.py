@@ -3,18 +3,18 @@ import numpy as np
 
 
 class Stock(SystemComponent):
-    def __init__(self, name, initial_value=0):
+    def __init__(self, name: str, initial_value: float = 0) -> None:
         super().__init__(name)
-        self.value = initial_value
+        self.value: float = initial_value
 
-    def change(self, amount):
+    def change(self, amount: float) -> None:
         new_value = self.value + amount
         if not np.isfinite(
             new_value
-        ):  # Vérifier si la nouvelle valeur est infinie ou NaN
+        ):  # Check if the new value is infinite or NaN
             raise ValueError("Stock value became non-finite")
         self.value = new_value
 
-    def step(self, dt):
-        # La méthode step pour Stock pourrait inclure une logique pour le changement de valeur au fil du temps
+    def step(self, dt: float) -> None:
+        # The step method for Stock could include logic for value changes over time
         pass
