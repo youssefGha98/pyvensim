@@ -23,9 +23,17 @@ dev = [
     "scipy-stubs",
     "types-seaborn",
 ]
+api = [
+    "fastapi>=0.110.0",
+    "uvicorn[standard]>=0.27.0",
+]
+api-dev = [
+    "httpx",
+    "pytest",
+]
 
 [tool.setuptools.packages.find]
-include = ["models*"]
+include = ["models*", "api*"]
 
 [tool.mypy]
 disallow_untyped_defs = true
